@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Demi Leigh</title>
+    <style>
+        /* RESET & BASE */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: #fef8f7;
+            color: #2d1c1c;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 1.8s ease;
+        }
+
+        /* SCREENS */
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 25px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1.2s ease, visibility 0s 1.2s;
+            text-align: center;
+        }
+
+        .screen.active {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 1.2s ease;
+        }
+
+        /* TYPOGRAPHY */
+        h1 {
+            font-size: clamp(2.8rem, 6vw, 3.8rem);
+            font-weight: 300;
+            color: #8c2842;
+            margin-bottom: 24px;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: clamp(2rem, 4vw, 2.5rem);
+            font-weight: 350;
+            color: #8c2842;
+            margin-bottom: 32px;
+            line-height: 1.2;
+        }
+
+        .text-block {
+            font-size: clamp(1.1rem, 3vw, 1.25rem);
+            line-height: 1.7;
+            color: #3d2828;
+            max-width: 680px;
+            margin: 0 auto 40px;
+            font-weight: 350;
+        }
+
+        .line {
+            opacity: 0;
+            transform: translateY(15px);
+            margin-bottom: 26px;
+            transition: opacity 0.9s ease, transform 0.9s ease;
+        }
+
+        .line.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* BUTTONS */
+        .btn {
+            background: #8c2842;
+            color: white;
+            border: none;
+            padding: 18px 48px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 24px;
+            transition: all 0.4s ease;
+            font-weight: 400;
+            letter-spacing: 0.02em;
+            box-shadow: 0 6px 20px rgba(140, 40, 66, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(140, 40, 66, 0.25);
+            background: #9d314d;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-yes {
+            background: #8c2842;
+            margin-right: 12px;
+        }
+
+        .btn-no {
+            background: transparent;
+            color: #8c2842;
+            border: 1px solid #e8c8d1;
+            margin-left: 12px;
+        }
+
+        .btn-no:hover {
+            background: rgba(140, 40, 66, 0.05);
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 32px;
+        }
+
+        /* CANVAS */
+        #heartCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* HIDDEN MESSAGE */
+        .hidden-message {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            margin-top: 40px;
+            padding: 0 20px;
+            transition: all 2s ease;
+            font-size: 1.2rem;
+            color: #5a3d3d;
+            border-top: 1px solid transparent;
+            font-style: italic;
+        }
+
+        .hidden-message.revealed {
+            max-height: 200px;
+            opacity: 1;
+            padding-top: 30px;
+            border-top-color: rgba(140, 40, 66, 0.15);
+        }
+
+        /* BREATHING CIRCLE */
+        .breathing-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #f5e6d8 30%, #e8d0b9 100%);
+            margin: 40px 0;
+            animation: breathe 4s infinite ease-in-out;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        /* FLOURISH */
+        .flourish {
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #8c2842 30%, #8c2842 70%, transparent);
+            margin: 30px auto;
+        }
+
+        /* RESPONSIVE */
+        @media (min-width: 768px) {
+            .screen {
+                padding: 50px;
+            }
+            
+            .text-block {
+                max-width: 600px;
+            }
+            
+            .breathing-circle {
+                width: 160px;
+                height: 160px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 220px;
+            }
+            
+            .btn-yes, .btn-no {
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- SCREEN 1: LANDING -->
+    <div id="screen1" class="screen active">
+        <div class="flourish"></div>
+        <h1>For Demi Leigh</h1>
+        <p class="text-block" style="font-size: 1.3rem;">A quiet moment, just for us.</p>
+        <button class="btn" id="btnBegin">Begin</button>
+    </div>
+
+    <!-- SCREEN 2: STORY -->
+    <div id="screen2" class="screen">
+        <div class="text-block" id="storyText">
+            <div class="line">There's something about the way ordinary moments become beautiful with you.</div>
+            <div class="line">The way you laugh at my jokes. How you notice small things.</div>
+            <div class="line">It's not about big gestures, but the quiet certainty that life is better with you in it.</div>
+            <div class="line">You make everyday feel like a gentle discovery.</div>
+            <div class="line">And today, I wanted to celebrate exactly that.</div>
+        </div>
+        <button class="btn" id="btnContinue" style="display:none;">Continue</button>
+    </div>
+
+    <!-- SCREEN 3: PAUSE -->
+    <div id="screen3" class="screen">
+        <div class="breathing-circle"></div>
+        <p class="text-block" style="max-width: 500px;">
+            Just breathe here for a moment.<br>And know you're deeply cherished.
+        </p>
+    </div>
+
+    <!-- SCREEN 4: QUESTION -->
+    <div id="screen4" class="screen">
+        <h2>Demi Leigh,</h2>
+        <p class="text-block" style="margin-bottom: 20px;">
+            You are my favorite adventure, my comfort, and my joy.
+        </p>
+        <div class="flourish"></div>
+        <h2 style="margin-top: 10px;">Will you be my Valentine?</h2>
+        <div class="button-group">
+            <button class="btn btn-yes" id="btnYes">Yes, Absolutely</button>
+            <button class="btn btn-no" id="btnNo">Maybe Later</button>
+        </div>
+        <div class="hidden-message" id="hiddenMessage">
+            Every day with you feels like a gift. I can't wait for all our tomorrows. I love you.
+        </div>
+    </div>
+
+    <!-- CANVAS FOR ANIMATIONS -->
+    <canvas id="heartCanvas"></canvas>
+
+    <script>
+        // DOM ELEMENTS
+        const screens = document.querySelectorAll('.screen');
+        const btnBegin = document.getElementById('btnBegin');
+        const btnContinue = document.getElementById('btnContinue');
+        const btnYes = document.getElementById('btnYes');
+        const btnNo = document.getElementById('btnNo');
+        const storyLines = document.querySelectorAll('#storyText .line');
+        const hiddenMessage = document.getElementById('hiddenMessage');
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // STATE
+        let currentScreen = 0;
+        let lineIndex = 0;
+
+        // SETUP CANVAS
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // SCREEN TRANSITIONS
+        function showScreen(index) {
+            if (index < 0 || index >= screens.length) return;
+            
+            screens[currentScreen].classList.remove('active');
+            currentScreen = index;
+            
+            setTimeout(() => {
+                screens[index].classList.add('active');
+            }, 50);
+        }
+
+        // STORY LINE REVEAL
+        function revealLines() {
+            if (lineIndex < storyLines.length) {
+                storyLines[lineIndex].classList.add('visible');
+                lineIndex++;
+                setTimeout(revealLines, 2000);
+            } else {
+                setTimeout(() => {
+                    btnContinue.style.display = 'block';
+                }, 800);
+            }
+        }
+
+        // HEART ANIMATION
+        function createHearts() {
+            const hearts = [];
+            const colors = ['#ff6b93', '#ff8fab', '#ffa8c2', '#ffc2d4'];
+            
+            // CREATE HEARTS
+            for (let i = 0; i < 50; i++) {
+                hearts.push({
+                    x: Math.random() * canvas.width,
+                    y: canvas.height + 20,
+                    size: Math.random() * 12 + 8,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speed: Math.random() * 2 + 1,
+                    sway: Math.random() * 2 - 1,
+                    rotation: Math.random() * Math.PI * 2,
+                    rotationSpeed: (Math.random() - 0.5) * 0.05
+                });
+            }
+            
+            // DRAW HEART SHAPE
+            function drawHeart(x, y, size, color, rotation) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(rotation);
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                
+                // SIMPLE HEART SHAPE
+                ctx.moveTo(0, size/4);
+                ctx.bezierCurveTo(-size, -size/2, -size, size/2, 0, size*1.2);
+                ctx.bezierCurveTo(size, size/2, size, -size/2, 0, size/4);
+                
+                ctx.fill();
+                ctx.restore();
+            }
+            
+            // ANIMATION LOOP
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                let heartsAlive = false;
+                
+                hearts.forEach(heart => {
+                    heart.y -= heart.speed;
+                    heart.x += heart.sway * 0.3;
+                    heart.rotation += heart.rotationSpeed;
+                    
+                    if (heart.y > -50) {
+                        heartsAlive = true;
+                        drawHeart(heart.x, heart.y, heart.size, heart.color, heart.rotation);
+                    }
+                });
+                
+                if (heartsAlive) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            
+            animate();
+        }
+
+        // EVENT LISTENERS
+        btnBegin.addEventListener('click', () => {
+            showScreen(1);
+            setTimeout(revealLines, 500);
+        });
+
+        btnContinue.addEventListener('click', () => {
+            showScreen(2);
+            setTimeout(() => showScreen(3), 3500);
+        });
+
+        btnYes.addEventListener('click', () => {
+            createHearts();
+            
+            // DISABLE BUTTONS
+            btnYes.disabled = true;
+            btnNo.disabled = true;
+            btnYes.textContent = "Yes! 💖";
+            
+            // REVEAL MESSAGE
+            setTimeout(() => {
+                hiddenMessage.classList.add('revealed');
+            }, 1500);
+        });
+
+        btnNo.addEventListener('mouseover', () => {
+            if (!btnNo.disabled) {
+                const x = Math.random() * (window.innerWidth - 150);
+                const y = Math.random() * (window.innerHeight - 60);
+                
+                btnNo.style.position = 'fixed';
+                btnNo.style.left = x + 'px';
+                btnNo.style.top = y + 'px';
+            }
+        });
+
+        // INITIAL BACKGROUND TRANSITION
+        setTimeout(() => {
+            document.body.style.background = '#fef6f4';
+        }, 300);
+    </script>
+</body>
+</html>
